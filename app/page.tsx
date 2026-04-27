@@ -6,7 +6,7 @@ export default function Home() {
       <header className="w-full px-6 py-5 flex items-center justify-between max-w-6xl mx-auto">
         <span className="text-xl font-semibold tracking-tight">merca</span>
         <span className="text-xs uppercase tracking-widest text-zinc-500">
-          Pronto · LATAM
+          Pronto · 🌎 LATAM
         </span>
       </header>
 
