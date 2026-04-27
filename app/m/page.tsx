@@ -193,7 +193,7 @@ function ProductCard({
   const fullName = brand ? `${brand} ${product.name}` : product.name;
 
   return (
-    <div className="bg-white">
+    <Link href={`/m/p/${product.id}`} className="bg-white block">
       <div className="relative aspect-[4/5] bg-zinc-100 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -203,7 +203,11 @@ function ProductCard({
           className="w-full h-full object-cover"
         />
         <button
-          onClick={() => onWishlist(product.id)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onWishlist(product.id);
+          }}
           aria-label="Agregar a favoritos"
           className="absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center"
         >
@@ -239,13 +243,16 @@ function ProductCard({
         </div>
         <div className="text-[10px] text-rose-600 mt-0.5">Estimado</div>
       </div>
-    </div>
+    </Link>
   );
 }
 
 function PromoCard({ product }: { product: Product }) {
   return (
-    <div className="bg-white relative rounded-sm border border-rose-200 overflow-hidden">
+    <Link
+      href={`/m/p/${product.id}`}
+      className="bg-white relative rounded-sm border border-rose-200 overflow-hidden block"
+    >
       <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -271,7 +278,7 @@ function PromoCard({ product }: { product: Product }) {
           <span className="text-[11px] text-rose-600">Estimado</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
