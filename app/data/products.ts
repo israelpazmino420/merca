@@ -10,7 +10,37 @@ export type Product = {
   badge?: string;
 };
 
-const img = (id: number) => `https://picsum.photos/seed/merca-${id}/600/750`;
+const FASHION_IMAGES = [
+  "1515886657613-9f3515b0c78f",
+  "1581338834647-b0fb40704e21",
+  "1496747611176-843222e1e57c",
+  "1469334031218-e382a71b716b",
+  "1542272604-787c3835535d",
+  "1490481651871-ab68de25d43d",
+  "1483985988355-763728e1935b",
+  "1539109136881-3be0616acf4b",
+  "1487222477894-8943e31ef7b2",
+  "1542295669297-4d352b042bca",
+  "1551803091-e20673f15770",
+  "1572804013309-59a88b7e92f1",
+  "1525507119028-ed4c629a60a3",
+  "1551488831-00ddcb6c6bd3",
+  "1612722432474-b971cdcea546",
+  "1591047139829-d91aecb6caea",
+  "1485231183945-fffde7cc051e",
+  "1554568218-0f1715e72254",
+  "1564859228273-274232fdb516",
+  "1503342217505-b0a15ec3261c",
+  "1623609163859-ca93c959b98a",
+  "1519748771451-a94c596fad67",
+  "1556905055-8f358a7a47b2",
+  "1591369822096-ffd140ec948f",
+];
+
+const img = (id: number) => {
+  const photo = FASHION_IMAGES[(id - 1) % FASHION_IMAGES.length];
+  return `https://images.unsplash.com/photo-${photo}?w=600&h=750&fit=crop&q=80`;
+};
 
 export const products: Product[] = [
   // Vestidos

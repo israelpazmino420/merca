@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { products, productImage, type Product } from "./data/products";
 
 const CATEGORIES = [
@@ -29,12 +29,6 @@ export default function Home() {
   const [cartCount, setCartCount] = useState(0);
   const [wishlist, setWishlist] = useState<Set<number>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
-  const [secondsLeft, setSecondsLeft] = useState(8 * 3600 + 23 * 60 + 47);
-
-  useEffect(() => {
-    const t = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
-    return () => clearInterval(t);
-  }, []);
 
   const addToCart = (productName: string) => {
     setCartCount((c) => c + 1);
@@ -51,16 +45,11 @@ export default function Home() {
     });
   };
 
-  const flashSale = products.slice(0, 8);
-  const trending = products.slice(8, 22);
+  const trending = products.slice(0, 17);
   const bestSellers = [...products]
     .sort((a, b) => b.sold - a.sold)
-    .slice(0, 14);
-  const newArrivals = products.slice(36, 50);
-
-  const hh = String(Math.floor(secondsLeft / 3600)).padStart(2, "0");
-  const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0");
-  const ss = String(secondsLeft % 60).padStart(2, "0");
+    .slice(0, 17);
+  const newArrivals = products.slice(33, 50);
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 text-zinc-950">
@@ -246,44 +235,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FLASH SALE with countdown */}
-        <section className="max-w-7xl mx-auto px-3 sm:px-4 py-3">
-          <div className="bg-gradient-to-r from-rose-600 to-orange-500 rounded-xl p-3 sm:p-4 text-white">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <span className="text-xl sm:text-2xl">⚡</span>
-                <h2 className="text-lg sm:text-2xl font-black tracking-tight">
-                  FLASH SALE
-                </h2>
-                <span className="hidden sm:inline text-sm opacity-90">
-                  Termina en
-                </span>
-                <div className="flex items-center gap-1 text-xs sm:text-sm font-mono">
-                  <Counter v={hh} />
-                  <span className="font-bold">:</span>
-                  <Counter v={mm} />
-                  <span className="font-bold">:</span>
-                  <Counter v={ss} />
-                </div>
-              </div>
-              <a href="#" className="text-xs sm:text-sm font-medium underline whitespace-nowrap">
-                Ver todo →
-              </a>
-            </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3">
-              {flashSale.map((p) => (
-                <FlashCard
-                  key={p.id}
-                  product={p}
-                  onAdd={addToCart}
-                  isWishlisted={wishlist.has(p.id)}
-                  onWishlist={toggleWishlist}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
         <ProductSection
           title="🔥 Tendencias en LATAM"
           subtitle="Lo que más se busca esta semana"
@@ -390,14 +341,6 @@ export default function Home() {
         </div>
       )}
     </div>
-  );
-}
-
-function Counter({ v }: { v: string }) {
-  return (
-    <span className="bg-zinc-950 text-white px-1.5 py-0.5 rounded font-bold">
-      {v}
-    </span>
   );
 }
 
@@ -522,56 +465,6 @@ function ProductCard({
           </div>
           <span>{formatSold(product.sold)}+ vendidos</span>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function FlashCard({
-  product,
-  onAdd,
-  isWishlisted,
-  onWishlist,
-}: {
-  product: Product;
-  onAdd: (name: string) => void;
-  isWishlisted: boolean;
-  onWishlist: (id: number) => void;
-}) {
-  return (
-    <div className="bg-white rounded-lg overflow-hidden">
-      <div className="relative aspect-square overflow-hidden bg-zinc-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={productImage(product.id)}
-          alt={product.name}
-          loading="lazy"
-          className="w-full h-full object-cover"
-        />
-        <button
-          onClick={() => onWishlist(product.id)}
-          aria-label="Agregar a favoritos"
-          className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white/90 flex items-center justify-center"
-        >
-          <HeartIcon
-            filled={isWishlisted}
-            className={isWishlisted ? "text-rose-600" : "text-zinc-700"}
-            size={12}
-          />
-        </button>
-      </div>
-      <div className="p-1.5">
-        <button
-          onClick={() => onAdd(product.name)}
-          className="w-full text-left"
-        >
-          <div className="text-sm font-bold text-rose-600">
-            ${product.price.toFixed(2)}
-          </div>
-          <div className="text-[10px] text-zinc-400 line-through">
-            ${product.originalPrice?.toFixed(2)}
-          </div>
-        </button>
       </div>
     </div>
   );
