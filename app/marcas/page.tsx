@@ -1,0 +1,34 @@
+import Link from "next/link";
+
+export const metadata = {
+  title: "Para marcas — Merca",
+  description: "Vende tu marca a millones de compradores en LATAM con Merca.",
+};
+
+export default function MarcasPage() {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div className="max-w-xl flex flex-col items-center gap-6 py-24">
+        <Link
+          href="/"
+          className="text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+        >
+          ← merca
+        </Link>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+          Lleva tu marca a toda LATAM
+        </h1>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400">
+          Estamos abriendo cupos para las primeras marcas. Déjanos tu correo y
+          te avisamos cuando podamos onboardear nuevas tiendas.
+        </p>
+        <a
+          href="mailto:hola@merca.lat?subject=Quiero%20vender%20en%20Merca"
+          className="h-12 px-8 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-medium hover:opacity-90 transition"
+        >
+          Escribirnos
+        </a>
+      </div>
+    </div>
+  );
+}
