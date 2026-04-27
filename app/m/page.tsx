@@ -5,10 +5,27 @@ import { useState } from "react";
 import { products, productImage, type Product } from "../data/products";
 
 const CATEGORIES = ["Todo", "Hombre", "Mujer", "Zapatos", "Niños", "Deporte"];
+const BRANDS = [
+  "Lina",
+  "Cielo",
+  "Móra",
+  "Coral",
+  "Selva",
+  "Aurora",
+  "Solé",
+  "Brisa",
+  "Nido",
+  "Vera",
+];
 
-function formatSold(n: number) {
+function formatK(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
   return String(n);
+}
+
+function brandFor(id: number): string | null {
+  if (id % 3 === 0) return null;
+  return BRANDS[id % BRANDS.length];
 }
 
 export default function MercaApp() {
@@ -25,79 +42,93 @@ export default function MercaApp() {
     });
   };
 
+  // First product on left, promo card on right, then rest
+  const promoProduct = products[1];
+  const restProducts = products.slice(2);
+
   return (
     <div className="min-h-screen bg-zinc-200 flex justify-center font-sans">
-      {/* Mobile frame */}
       <div className="w-full max-w-[420px] bg-white min-h-screen flex flex-col shadow-xl relative">
-        {/* Header */}
+        {/* iOS-style status bar with brand centered */}
+        <div className="h-7 bg-white flex items-center justify-between px-5 text-[13px]">
+          <span className="font-semibold text-zinc-950 tabular-nums">10:22</span>
+          <Link href="/" className="text-base font-black tracking-tight text-zinc-950">
+            merca
+          </Link>
+          <div className="flex items-center gap-1.5 text-zinc-950">
+            <SignalIcon />
+            <WifiIcon />
+            <BatteryIcon />
+          </div>
+        </div>
+
+        {/* Header — single row */}
         <header className="sticky top-0 z-30 bg-white">
-          <div className="h-12 px-3 flex items-center justify-between">
+          <div className="px-3 py-2 flex items-center gap-2">
             <button
               aria-label="Mensajes"
-              className="h-9 w-9 flex items-center justify-center text-zinc-900"
+              className="h-10 w-7 flex items-center justify-center text-zinc-900 flex-shrink-0"
             >
               <MessageIcon />
             </button>
-            <Link
-              href="/"
-              className="text-2xl font-black tracking-tight text-zinc-950"
-            >
-              merca
-            </Link>
             <button
               aria-label="Calendario"
-              className="h-9 w-9 flex items-center justify-center text-zinc-900 relative"
+              className="h-10 w-7 flex items-center justify-center text-zinc-900 relative flex-shrink-0"
             >
               <CalendarIcon />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-600 ring-2 ring-white" />
+              <span className="absolute top-1.5 -right-0.5 h-2 w-2 rounded-full bg-rose-600 ring-2 ring-white" />
             </button>
-          </div>
 
-          {/* Search bar */}
-          <div className="px-3 py-1 flex items-center gap-2">
-            <div className="flex-1 h-9 bg-zinc-100 rounded-full px-3 flex items-center gap-2">
-              <SearchIcon size={16} className="text-zinc-500 flex-shrink-0" />
-              <span className="flex-1 text-sm text-zinc-800 truncate">
+            {/* Search bar — outlined with black search button */}
+            <div className="flex-1 h-10 border border-zinc-950 rounded-md flex items-center overflow-hidden bg-white">
+              <span className="flex-1 text-sm pl-3 text-zinc-800 truncate">
                 Tops 🔥
               </span>
               <button
                 aria-label="Buscar con cámara"
-                className="text-zinc-700 flex-shrink-0"
+                className="px-1.5 text-zinc-700"
               >
-                <CameraIcon size={18} />
+                <CameraIcon size={20} />
+              </button>
+              <button
+                aria-label="Buscar"
+                className="h-10 w-10 bg-zinc-950 text-white flex items-center justify-center"
+              >
+                <SearchIcon size={18} />
               </button>
             </div>
+
             <button
               aria-label="Favoritos"
-              className="h-9 w-9 flex items-center justify-center text-zinc-900"
+              className="h-10 w-7 flex items-center justify-center text-zinc-900 flex-shrink-0"
             >
-              <HeartIcon size={22} />
+              <HeartIcon size={24} />
             </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex items-end border-b border-zinc-100">
+          <div className="flex items-end">
             <div className="flex-1 flex overflow-x-auto scrollbar-none">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveTab(cat)}
-                  className={`px-3.5 py-2.5 text-sm whitespace-nowrap relative transition ${
+                  className={`px-3.5 py-2.5 text-base whitespace-nowrap relative transition ${
                     activeTab === cat
                       ? "font-bold text-zinc-950"
-                      : "text-zinc-500"
+                      : "text-zinc-400"
                   }`}
                 >
                   {cat}
                   {activeTab === cat && (
-                    <span className="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 w-6 bg-zinc-950 rounded-full" />
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 w-9 bg-zinc-950 rounded-full" />
                   )}
                 </button>
               ))}
             </div>
             <button
               aria-label="Más categorías"
-              className="px-3 py-2.5 text-zinc-700"
+              className="px-3 py-2.5 text-zinc-700 flex-shrink-0"
             >
               <MenuIcon />
             </button>
@@ -105,25 +136,15 @@ export default function MercaApp() {
         </header>
 
         {/* Content */}
-        <div className="flex-1 pb-20">
-          {/* Promo banner */}
-          <div className="mx-3 mt-3 bg-gradient-to-r from-rose-50 to-orange-50 border border-rose-100 rounded-xl p-3 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-rose-600 text-white flex items-center justify-center flex-shrink-0">
-              <ArrowDownIcon />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-zinc-950 leading-snug">
-                ¡Tus artículos de interés ahora son más baratos!
-              </p>
-              <p className="text-xs text-rose-600 font-bold mt-0.5">
-                -15% extra al pagar →
-              </p>
-            </div>
-          </div>
-
-          {/* Product grid */}
-          <div className="grid grid-cols-2 gap-2 p-3">
-            {products.map((p) => (
+        <div className="flex-1 pb-20 bg-zinc-50">
+          <div className="grid grid-cols-2 gap-1.5 p-1.5">
+            <ProductCard
+              product={products[0]}
+              onWishlist={toggleWishlist}
+              isWishlisted={wishlist.has(products[0].id)}
+            />
+            <PromoCard product={promoProduct} />
+            {restProducts.map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}
@@ -134,14 +155,14 @@ export default function MercaApp() {
           </div>
         </div>
 
-        {/* Bottom tab bar — fixed within frame */}
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] z-20 bg-white border-t border-zinc-200 pb-[env(safe-area-inset-bottom)]">
+        {/* Bottom tab bar */}
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] z-20 bg-white border-t border-zinc-100 pb-[env(safe-area-inset-bottom)]">
           <div className="grid grid-cols-5 h-16">
-            <TabBarItem icon={<HomeIcon />} label="Comprar" active />
-            <TabBarItem icon={<SearchIcon size={22} />} label="Categoría" />
-            <TabBarItem icon={<BoltIcon />} label="Trends" />
+            <TabBarItem icon={<HomeFilledIcon />} label="Comprar" active />
+            <TabBarItem icon={<CategoryIcon />} label="Categoría" />
+            <TabBarItem icon={<TrendsIcon />} label="Trends" />
             <TabBarItem
-              icon={<BagIcon />}
+              icon={<CartIcon />}
               label="Cesta"
               badge={cartCount}
               onClick={() => setCartCount((c) => Math.max(0, c - 1))}
@@ -168,10 +189,12 @@ function ProductCard({
         ((product.originalPrice - product.price) / product.originalPrice) * 100,
       )
     : 0;
+  const brand = brandFor(product.id);
+  const fullName = brand ? `${brand} ${product.name}` : product.name;
 
   return (
     <div className="bg-white">
-      <div className="relative aspect-square bg-zinc-100 overflow-hidden rounded-md">
+      <div className="relative aspect-[4/5] bg-zinc-100 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={productImage(product.id)}
@@ -179,11 +202,6 @@ function ProductCard({
           loading="lazy"
           className="w-full h-full object-cover"
         />
-        {discount > 0 && (
-          <span className="absolute top-1.5 left-1.5 bg-rose-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-            -{discount}%
-          </span>
-        )}
         <button
           onClick={() => onWishlist(product.id)}
           aria-label="Agregar a favoritos"
@@ -196,29 +214,78 @@ function ProductCard({
           />
         </button>
       </div>
-      <div className="px-1 py-2">
-        <h3 className="text-xs text-zinc-900 line-clamp-2 leading-tight min-h-[2.4em]">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-zinc-500">
-          <span className="text-amber-500 text-xs">★</span>
-          <span className="font-medium text-zinc-700">{product.rating}</span>
-          <span className="text-zinc-400">·</span>
-          <span>{formatSold(product.sold)}+ vendidos</span>
-        </div>
-        <div className="flex items-baseline gap-1 mt-1">
-          <span className="text-base font-bold text-orange-600">
-            ${product.price.toFixed(2)}
-          </span>
-          {product.originalPrice && (
-            <span className="text-[10px] text-zinc-400 line-through">
-              ${product.originalPrice.toFixed(2)}
+      <div className="px-1.5 py-2">
+        <div className="flex items-start gap-1.5">
+          {discount > 0 && (
+            <span className="bg-rose-100 text-rose-600 text-[11px] font-bold px-1 rounded shrink-0 leading-tight pt-px">
+              -{discount}%
             </span>
           )}
+          <h3 className="text-[13px] text-zinc-900 line-clamp-1 leading-snug flex-1">
+            {fullName}
+          </h3>
+        </div>
+        <div className="flex items-center gap-1 mt-1 text-[11px]">
+          <Stars rating={product.rating} />
+          <span className="text-zinc-500">({formatK(product.reviews)}+)</span>
+        </div>
+        <div className="flex items-baseline gap-1.5 mt-1.5">
+          <span className="text-[15px] font-bold text-orange-600 leading-none">
+            ${product.price.toFixed(2)}
+          </span>
+          <span className="text-[11px] text-zinc-600">
+            {formatK(product.sold)} vendidos
+          </span>
         </div>
         <div className="text-[10px] text-rose-600 mt-0.5">Estimado</div>
       </div>
     </div>
+  );
+}
+
+function PromoCard({ product }: { product: Product }) {
+  return (
+    <div className="bg-white relative rounded-sm border border-rose-200 overflow-hidden">
+      <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={productImage(product.id)}
+          alt={product.name}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-0 left-0 right-0 bg-orange-500 text-white text-[11px] font-bold py-1 px-2 flex items-center gap-1">
+          <ArrowDownIcon size={12} />
+          <span>5% OFF desde que lo viste</span>
+        </div>
+      </div>
+      <div className="px-2 py-2 bg-gradient-to-b from-rose-50 to-rose-100">
+        <p className="text-[13px] font-medium text-zinc-950 leading-snug">
+          ¡Tus artículos de interés ahora son más baratos!{" "}
+          <span className="font-bold">›</span>
+        </p>
+        <div className="flex items-baseline gap-1 mt-1.5">
+          <span className="text-[15px] font-bold text-orange-600 leading-none">
+            ${product.price.toFixed(2)}
+          </span>
+          <span className="text-[11px] text-rose-600">Estimado</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stars({ rating }: { rating: number }) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return (
+    <span className="flex items-center text-zinc-900">
+      {[0, 1, 2, 3, 4].map((i) => {
+        if (i < full) return <span key={i}>★</span>;
+        if (i === full && half) return <span key={i}>⯨</span>;
+        return <span key={i} className="text-zinc-300">★</span>;
+      })}
+    </span>
   );
 }
 
@@ -250,27 +317,58 @@ function TabBarItem({
           </span>
         )}
       </div>
-      <span className="text-[10px] font-medium">{label}</span>
+      <span className="text-[11px] font-medium">{label}</span>
     </button>
   );
 }
 
-/* --- Icons (line / minimalist) --- */
+/* --- Status bar icons --- */
+
+function SignalIcon() {
+  return (
+    <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor">
+      <rect x="0" y="7" width="3" height="4" rx="0.5" />
+      <rect x="4.3" y="5" width="3" height="6" rx="0.5" />
+      <rect x="8.6" y="3" width="3" height="8" rx="0.5" />
+      <rect x="12.9" y="0" width="3" height="11" rx="0.5" />
+    </svg>
+  );
+}
+
+function WifiIcon() {
+  return (
+    <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor">
+      <path d="M7.5 0C4.6 0 1.9 1 0 2.6l1.4 1.7C2.9 3 5.1 2.2 7.5 2.2s4.6.8 6.1 2.1L15 2.6C13.1 1 10.4 0 7.5 0Zm0 4.4c-1.9 0-3.6.7-4.9 1.7l1.5 1.7c.9-.7 2.1-1.2 3.4-1.2s2.5.5 3.4 1.2l1.5-1.7c-1.3-1-3-1.7-4.9-1.7Zm0 4.4c-.9 0-1.6.3-2.2.9L7.5 11l2.2-1.3c-.6-.6-1.3-.9-2.2-.9Z" />
+    </svg>
+  );
+}
+
+function BatteryIcon() {
+  return (
+    <svg width="25" height="11" viewBox="0 0 25 11" fill="none">
+      <rect x="0.5" y="0.5" width="21" height="10" rx="2.5" stroke="currentColor" strokeOpacity="0.4" />
+      <rect x="2" y="2" width="11" height="7" rx="1" fill="currentColor" />
+      <rect x="22.5" y="3.5" width="2" height="4" rx="1" fill="currentColor" fillOpacity="0.4" />
+    </svg>
+  );
+}
+
+/* --- App icons --- */
 
 function MessageIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16v12H7l-3 3z" />
     </svg>
   );
 }
 
 function CalendarIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="16" rx="1.5" />
+      <line x1="16" y1="3" x2="16" y2="7" />
+      <line x1="8" y1="3" x2="8" y2="7" />
       <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
@@ -278,7 +376,7 @@ function CalendarIcon() {
 
 function SearchIcon({ size = 18, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
@@ -287,7 +385,7 @@ function SearchIcon({ size = 18, className = "" }: { size?: number; className?: 
 
 function CameraIcon({ size = 18, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
       <circle cx="12" cy="13" r="4" />
     </svg>
@@ -304,7 +402,7 @@ function HeartIcon({
   className?: string;
 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
     </svg>
   );
@@ -312,7 +410,7 @@ function HeartIcon({
 
 function MenuIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <line x1="3" y1="6" x2="21" y2="6" />
       <line x1="3" y1="12" x2="21" y2="12" />
       <line x1="3" y1="18" x2="21" y2="18" />
@@ -320,45 +418,55 @@ function MenuIcon() {
   );
 }
 
-function ArrowDownIcon() {
+function ArrowDownIcon({ size = 18 }: { size?: number }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <line x1="12" y1="5" x2="12" y2="19" />
       <polyline points="19 12 12 19 5 12" />
     </svg>
   );
 }
 
-function HomeIcon() {
+function HomeFilledIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="m12 3 9 8h-2v9h-5v-6h-4v6H5v-9H3z" />
     </svg>
   );
 }
 
-function BoltIcon() {
+function CategoryIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+      <line x1="11" y1="8" x2="11" y2="14" />
     </svg>
   );
 }
 
-function BagIcon() {
+function TrendsIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 3 7 14h5l-2 7 7-11h-5z" />
+    </svg>
+  );
+}
+
+function CartIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
     </svg>
   );
 }
 
 function UserIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
